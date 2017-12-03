@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <omp.h>
+
+int main()
+{
+int m = 400000,n=600000;
+int i,j;
+double starttime,endtime,time;
+int a;
+
+omp_set_num_threads(2);
+starttime = omp_get_wtime();
+ #pragma omp parallel private(i,j,a) default(shared)
+ #pragma omp schedule(static)
+for (i = 1;i <= m;i ++)
+{
+for (j = 1;j <= n;j++)
+	a = i*j;
+}
+endtime = omp_get_wtime();
+time = (endtime - starttime) * 1000;
+printf("static schedule time = %13.5f milleseconds\n",time);
+
+starttime = omp_get_wtime();
+ #pragma omp parallel private(i,j,a) default(shared)
+ #pragma omp schedule(dynamic)
+ for (i = 1; i <= m; i++)
+ {
+  for (j = 1; j <=n; j++)
+      a = i * j;
+ }
+ endtime = omp_get_wtime();
+ time = (endtime - starttime) * 1000;
+ printf("dynamic schedule time = %13.5f milleseconds\n", time);
+
+
+starttime = omp_get_wtime();
+ #pragma omp parallel private(i,j,a) default(shared)
+ #pragma omp schedule(guided)
+ for (i = 1; i <= m; i++)
+ {
+  for (j = 1; j <=n; j++)
+      a = i * j;
+ }
+ endtime = omp_get_wtime();
+ time = (endtime - starttime) * 1000;
+ printf("guided schedule time = %13.5f milleseconds\n", time);
+
+return 0;
+
+}
